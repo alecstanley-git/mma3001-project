@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Remove the unit project brief (keep locally, available online)
+brief/
