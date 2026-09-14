@@ -12,4 +12,6 @@ wheels/
 # Remove the unit project brief (keep locally, available online)
 brief/
 
+
+data/train/*
 .DS_Store

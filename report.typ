@@ -63,6 +63,8 @@
 
 = The Engineering Problem
 
+Need to cite @pork-rasher-error-packaging_dataset
+
 #todo[
   Explain: the engineering context; the problem being addressed; why the problem
   matters; the intended use of the computational solution; and the limitations of
