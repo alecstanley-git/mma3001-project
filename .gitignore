@@ -15,3 +15,6 @@ brief/
 
 data/train/*
 .DS_Store
+
+# Derived data: rebuilt by "python main.py --rebuild-cache"
+cache/
