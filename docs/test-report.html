@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">test-report.html</title>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
+  </head>
+  <body>
+    <h1 id="title">test-report.html</h1>
+    <p>Report generated on 03-Oct-2026 at 19:33:43 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.2.0</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</td>
+        </tr>
+      </tbody>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left">&lt;</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">&gt;</div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">103 tests took 00:00:18.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled>
+            <span class="failed">0 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" >
+            <span class="passed">103 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled>
+            <span class="rerun">0 Reruns</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="retried" disabled>
+            <span class="retried">0 Retried,</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.13.14&#34;, &#34;Platform&#34;: &#34;macOS-27.0.1-arm64-arm-64bit-Mach-O&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.1.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;metadata&#34;: &#34;3.1.1&#34;, &#34;html&#34;: &#34;4.2.0&#34;, &#34;anyio&#34;: &#34;4.15.1&#34;}, &#34;JAVA_HOME&#34;: &#34;/Users/alec/.sdkman/candidates/java/current&#34;}, &#34;tests&#34;: {&#34;tests/test_baseline.py::test_baseline_detections_are_converted_to_the_shared_form&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_baseline.py::test_baseline_detections_are_converted_to_the_shared_form&#34;, &#34;duration&#34;: &#34;396 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_baseline.py::test_baseline_detections_are_converted_to_the_shared_form&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;396 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_centre_to_corner_known_value&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_centre_to_corner_known_value&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_centre_to_corner_known_value&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_format_conversion_round_trip&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_format_conversion_round_trip&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_format_conversion_round_trip&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_overlap_of_identical_boxes_is_one&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_overlap_of_identical_boxes_is_one&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_overlap_of_identical_boxes_is_one&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_overlap_of_separate_boxes_is_zero&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_overlap_of_separate_boxes_is_zero&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_overlap_of_separate_boxes_is_zero&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_overlap_known_value&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_overlap_known_value&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_overlap_known_value&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_overlap_is_unchanged_by_stretching_the_axes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_overlap_is_unchanged_by_stretching_the_axes&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_overlap_is_unchanged_by_stretching_the_axes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_overlap_returns_one_value_per_pair&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_overlap_returns_one_value_per_pair&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_overlap_returns_one_value_per_pair&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_suppression_removes_repeats_and_keeps_separate_boxes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_suppression_removes_repeats_and_keeps_separate_boxes&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_suppression_removes_repeats_and_keeps_separate_boxes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_suppression_of_nothing_returns_nothing&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_suppression_of_nothing_returns_nothing&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_suppression_of_nothing_returns_nothing&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_suppression_rejects_mismatched_inputs&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_suppression_rejects_mismatched_inputs&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_suppression_rejects_mismatched_inputs&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_boxes.py::test_mirror_boxes_moves_centres_only&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_boxes.py::test_mirror_boxes_moves_centres_only&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_boxes.py::test_mirror_boxes_moves_centres_only&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_command_line.py::test_train_writes_the_detector_and_validation_results&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_command_line.py::test_train_writes_the_detector_and_validation_results&#34;, &#34;duration&#34;: &#34;00:00:08&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_command_line.py::test_train_writes_the_detector_and_validation_results&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:08&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\ntraining on 102 photographs (44064 grid cells including mirror images), stopping rule uses 18; network has 206215 parameters\npass   1  training loss 0.12914  validation score 0.1525\npass   2  training loss 0.04954  validation score 0.0000\npass   3  training loss 0.03974  validation score 0.1525\npass   4  training loss 0.03618  validation score 0.0095\npass   5  training loss 0.03166  validation score 0.1507\npass   6  training loss 0.03025  validation score 0.0000\npass   7  training loss 0.02998  validation score 0.0150\npass   8  training loss 0.02737  validation score 0.1144\npass   9  training loss 0.02548  validation score 0.3020\npass  10  training loss 0.02448  validation score 0.3750\npass  11  training loss 0.02379  validation score 0.3325\npass  12  training loss 0.02337  validation score 0.5550\npass  13  training loss 0.02250  validation score 0.3592\npass  14  training loss 0.02235  validation score 0.3550\npass  15  training loss 0.02146  validation score 0.0811\npass  16  training loss 0.02093  validation score 0.2025\npass  17  training loss 0.02060  validation score 0.5300\npass  18  training loss 0.02007  validation score 0.6300\npass  19  training loss 0.01940  validation score 0.6550\npass  20  training loss 0.01885  validation score 0.1800\npass  21  training loss 0.01855  validation score 0.8050\npass  22  training loss 0.01833  validation score 0.6550\npass  23  training loss 0.01799  validation score 0.8050\npass  24  training loss 0.01719  validation score 0.6062\npass  25  training loss 0.01730  validation score 0.1275\npass  26  training loss 0.01885  validation score 0.1525\npass  27  training loss 0.01660  validation score 0.5700\npass  28  training loss 0.01605  validation score 0.6169\npass  29  training loss 0.01539  validation score 0.4592\npass  30  training loss 0.01515  validation score 0.5605\npass  31  training loss 0.01461  validation score 0.7717\nvalidation: average precision 0.121, precision 0.43, recall 0.25 at confidence 1.00; balanced accuracy of verdicts 0.79\ntest: average precision 0.299, precision 0.44, recall 0.33 at confidence 1.00; balanced accuracy of verdicts 0.88\n&#34;}], &#34;tests/test_command_line.py::test_evaluate_uses_the_threshold_chosen_on_validation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_command_line.py::test_evaluate_uses_the_threshold_chosen_on_validation&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_command_line.py::test_evaluate_uses_the_threshold_chosen_on_validation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_command_line.py::test_compare_writes_a_table&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_command_line.py::test_compare_writes_a_table&#34;, &#34;duration&#34;: &#34;38 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_command_line.py::test_compare_writes_a_table&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;38 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n| Measure | Hand-written detector | Ultralytics YOLOv8 nano |\n| --- | ---: | ---: |\n| Average precision, any defect (overlap 0.5) | 0.299 | 0.299 |\n| Average precision, any defect (overlap 0.75) | 0.017 | 0.017 |\n| Mean average precision over classes (overlap 0.5) | 0.299 | 0.299 |\n| Precision at chosen confidence | 0.44 | 0.44 |\n| Recall at chosen confidence | 0.33 | 0.33 |\n| Defective packs flagged (sensitivity) | 0.75 | 0.75 |\n| Clean packs passed (specificity) | 1.00 | 1.00 |\n| Balanced accuracy of verdicts | 0.88 | 0.88 |\n| Learned parameters | 206,215 | 206,215 |\n| Training time (minutes) | 0.1 | 0.1 |\n| Time per photograph (milliseconds) | 6.2 | 6.2 |\n&#34;}], &#34;tests/test_command_line.py::test_profile_reports_timings_and_operation_counts&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_command_line.py::test_profile_reports_timings_and_operation_counts&#34;, &#34;duration&#34;: &#34;510 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_command_line.py::test_profile_reports_timings_and_operation_counts&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;510 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTraining (two passes): the ten functions with most time inside them\n         30976 function calls (30957 primitive calls) in 0.399 seconds\n\n   Ordered by: internal time\n   List reduced from 405 to 10 due to restriction &amp;lt;10&amp;gt;\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n      176    0.213    0.001    0.214    0.001 detector.py:190(cell_inputs)\n      174    0.042    0.000    0.090    0.001 network.py:157(loss_and_gradients)\n      176    0.040    0.000    0.040    0.000 network.py:128(forward)\n      174    0.039    0.000    0.039    0.000 network.py:276(step)\n     1234    0.013    0.000    0.013    0.000 {method &amp;#x27;reduce&amp;#x27; of &amp;#x27;numpy.ufunc&amp;#x27; objects}\n       28    0.010    0.000    0.010    0.000 {method &amp;#x27;decompress&amp;#x27; of &amp;#x27;zlib.Decompress&amp;#x27; objects}\n        3    0.008    0.003    0.009    0.003 network.py:75(transform)\n      174    0.007    0.000    0.213    0.001 detector.py:326(make_batch)\n      408    0.004    0.000    0.005    0.000 grid.py:60(encode)\n      696    0.003    0.000    0.007    0.000 network.py:192(&amp;lt;genexpr&amp;gt;)\n\n\n\nDetection on 16 photographs read from disk\n         8657 function calls in 0.102 seconds\n\n   Ordered by: internal time\n   List reduced from 193 to 10 due to restriction &amp;lt;10&amp;gt;\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.041    0.041    0.056    0.056 features.py:97(block_features)\n       16    0.016    0.001    0.039    0.002 dataset.py:196(load_image)\n       32    0.014    0.000    0.014    0.000 {method &amp;#x27;decode&amp;#x27; of &amp;#x27;ImagingDecoder&amp;#x27; objects}\n       19    0.012    0.001    0.012    0.001 {method &amp;#x27;reduce&amp;#x27; of &amp;#x27;numpy.ufunc&amp;#x27; objects}\n      213    0.004    0.000    0.006    0.000 {built-in method numpy.asarray}\n        1    0.003    0.003    0.003    0.003 detector.py:190(cell_inputs)\n       38    0.003    0.000    0.003    0.000 {method &amp;#x27;astype&amp;#x27; of &amp;#x27;numpy.ndarray&amp;#x27; objects}\n        1    0.001    0.001    0.001    0.001 features.py:45(brightness_gradients)\n      288    0.001    0.000    0.001    0.000 {method &amp;#x27;encode&amp;#x27; of &amp;#x27;ImagingEncoder&amp;#x27; objects}\n        1    0.001    0.001    0.001    0.001 network.py:128(forward)\n\n\n\nTime per photograph: 6.4 milliseconds\nNetwork layers: (1542, 128, 64, 7)\nLearned parameters: 206,215\nFloating point operations per grid cell: 412,231\nFloating point operations per photograph (108 cells): 44,520,948\n\n&#34;}], &#34;tests/test_command_line.py::test_a_command_is_required&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_command_line.py::test_a_command_is_required&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_command_line.py::test_a_command_is_required&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\nusage: packaging-defects [-h] [--dataset DATASET] [--artefacts ARTEFACTS]\n                         [--figures FIGURES] [--cache CACHE] [--seed SEED]\n                         {train,evaluate,baseline,compare,study,profile} ...\npackaging-defects: error: the following arguments are required: command\n&#34;}], &#34;tests/test_dataset.py::test_class_names_are_read&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_class_names_are_read&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_class_names_are_read&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_class_names_given_as_a_numbered_mapping&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_class_names_given_as_a_numbered_mapping&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_class_names_given_as_a_numbered_mapping&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_missing_settings_file_is_reported&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_missing_settings_file_is_reported&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_missing_settings_file_is_reported&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_settings_file_without_names_is_rejected&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_settings_file_without_names_is_rejected&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_settings_file_without_names_is_rejected&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_label_file_without_final_line_ending&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_label_file_without_final_line_ending&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_label_file_without_final_line_ending&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_empty_label_file_means_no_defects&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_empty_label_file_means_no_defects&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_empty_label_file_means_no_defects&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2 0.2 0.1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2 0.2 0.1]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.2 0.2 0.1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[7 0.5 0.5 0.2 0.2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[7 0.5 0.5 0.2 0.2]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[7 0.5 0.5 0.2 0.2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 1.5 0.5 0.2 0.2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 1.5 0.5 0.2 0.2]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 1.5 0.5 0.2 0.2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.0 0.2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.0 0.2]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 0.5 0.0 0.2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 half 0.2 0.2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 half 0.2 0.2]&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_malformed_label_lines_are_rejected[0 0.5 half 0.2 0.2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_source_frame_name&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_source_frame_name&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_source_frame_name&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_image_shrinks_by_averaging&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_image_shrinks_by_averaging&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_image_shrinks_by_averaging&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[1]&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[2]&#34;, &#34;duration&#34;: &#34;9 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;9 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[4]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[4]&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_image_matches_plain_block_averaging[4]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_image_resizes_other_sizes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_image_resizes_other_sizes&#34;, &#34;duration&#34;: &#34;3 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_image_resizes_other_sizes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;3 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_unreadable_photograph_is_reported&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_unreadable_photograph_is_reported&#34;, &#34;duration&#34;: &#34;14 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_unreadable_photograph_is_reported&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;14 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nWARNING \u26a0\ufe0f requirements: Ultralytics requirement [&amp;#x27;pi-heif&amp;#x27;] not found, AutoUpdate disabled by YOLO_AUTOINSTALL=False\n\n------------------------------ Captured log call -------------------------------\nWARNING  ultralytics:checks.py:648 WARNING \u26a0\ufe0f requirements: Ultralytics requirement [&amp;#x27;pi-heif&amp;#x27;] not found, AutoUpdate disabled by YOLO_AUTOINSTALL=False\n\n&#34;}], &#34;tests/test_dataset.py::test_missing_split_folder_is_reported&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_missing_split_folder_is_reported&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_missing_split_folder_is_reported&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_load_split_reads_photographs_and_labels&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_load_split_reads_photographs_and_labels&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_load_split_reads_photographs_and_labels&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_photograph_without_label_file_counts_as_clean&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_photograph_without_label_file_counts_as_clean&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_photograph_without_label_file_counts_as_clean&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_training_copies_of_held_out_frames_are_removed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_training_copies_of_held_out_frames_are_removed&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_training_copies_of_held_out_frames_are_removed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_dataset.py::test_subset_keeps_matching_entries&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_dataset.py::test_subset_keeps_matching_entries&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_dataset.py::test_subset_keeps_matching_entries&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_detector_finds_the_patches_in_unseen_photographs&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_detector_finds_the_patches_in_unseen_photographs&#34;, &#34;duration&#34;: &#34;00:00:06&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_detector_finds_the_patches_in_unseen_photographs&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:06&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_training_history_is_recorded&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_training_history_is_recorded&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_training_history_is_recorded&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_detections_have_the_documented_form&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_detections_have_the_documented_form&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_detections_have_the_documented_form&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_input_length_matches_the_documented_count&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_input_length_matches_the_documented_count&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_input_length_matches_the_documented_count&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_saved_detector_gives_identical_detections&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_saved_detector_gives_identical_detections&#34;, &#34;duration&#34;: &#34;52 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_saved_detector_gives_identical_detections&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;52 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_untrained_detector_refuses_to_run&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_untrained_detector_refuses_to_run&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_untrained_detector_refuses_to_run&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_detecting_in_no_photographs_returns_nothing&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_detecting_in_no_photographs_returns_nothing&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_detecting_in_no_photographs_returns_nothing&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_detector.py::test_copies_of_one_frame_stay_together_when_holding_back&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_detector.py::test_copies_of_one_frame_stay_together_when_holding_back&#34;, &#34;duration&#34;: &#34;764 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_detector.py::test_copies_of_one_frame_stay_together_when_holding_back&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;764 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_gradient_of_a_ramp_is_exact&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_gradient_of_a_ramp_is_exact&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_gradient_of_a_ramp_is_exact&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_central_difference_error_falls_with_the_square_of_the_spacing&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_central_difference_error_falls_with_the_square_of_the_spacing&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_central_difference_error_falls_with_the_square_of_the_spacing&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_sum_over_blocks&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_sum_over_blocks&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_sum_over_blocks&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_block_features_shape&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_block_features_shape&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_block_features_shape&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_vertical_edge_is_recorded_in_the_first_direction&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_vertical_edge_is_recorded_in_the_first_direction&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_vertical_edge_is_recorded_in_the_first_direction&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_colour_and_spread_features&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_colour_and_spread_features&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_colour_and_spread_features&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_wrong_image_size_is_rejected&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_wrong_image_size_is_rejected&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_wrong_image_size_is_rejected&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-False]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-False]&#34;, &#34;duration&#34;: &#34;29 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-False]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;29 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[False-True]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[False-True]&#34;, &#34;duration&#34;: &#34;29 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[False-True]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;29 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-True]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-True]&#34;, &#34;duration&#34;: &#34;29 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_mirrored_features_match_features_of_the_mirrored_photograph[True-True]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;29 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_features.py::test_saved_features_are_reused_and_refreshed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_features.py::test_saved_features_are_reused_and_refreshed&#34;, &#34;duration&#34;: &#34;44 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_features.py::test_saved_features_are_reused_and_refreshed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;44 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_outputs_per_cell&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_outputs_per_cell&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_outputs_per_cell&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_encode_places_the_defect_in_the_right_cell&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_encode_places_the_defect_in_the_right_cell&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_encode_places_the_defect_in_the_right_cell&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_encode_of_no_defects_is_all_zero&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_encode_of_no_defects_is_all_zero&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_encode_of_no_defects_is_all_zero&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_encode_handles_a_centre_on_the_far_edge&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_encode_handles_a_centre_on_the_far_edge&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_encode_handles_a_centre_on_the_far_edge&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_large_defect_is_reported_by_every_cell_in_its_central_part&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_large_defect_is_reported_by_every_cell_in_its_central_part&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_large_defect_is_reported_by_every_cell_in_its_central_part&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_central_fraction_of_zero_uses_only_the_centre_cell&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_central_fraction_of_zero_uses_only_the_centre_cell&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_central_fraction_of_zero_uses_only_the_centre_cell&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_smaller_defect_keeps_a_cell_claimed_by_two_defects&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_smaller_defect_keeps_a_cell_claimed_by_two_defects&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_smaller_defect_keeps_a_cell_claimed_by_two_defects&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_decode_recovers_encoded_boxes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_decode_recovers_encoded_boxes&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_decode_recovers_encoded_boxes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_decode_ignores_unconfident_cells_and_impossible_sizes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_decode_ignores_unconfident_cells_and_impossible_sizes&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_decode_ignores_unconfident_cells_and_impossible_sizes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_decode_clips_confidence_and_boxes_into_range&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_decode_clips_confidence_and_boxes_into_range&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_decode_clips_confidence_and_boxes_into_range&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_decode_merges_neighbouring_cells_reporting_the_same_defect&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_decode_merges_neighbouring_cells_reporting_the_same_defect&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_decode_merges_neighbouring_cells_reporting_the_same_defect&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_grid.py::test_loss_weights_follow_the_yolo_rules&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_grid.py::test_loss_weights_follow_the_yolo_rules&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_grid.py::test_loss_weights_follow_the_yolo_rules&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_trapezoid_rule_is_exact_for_a_straight_line&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_trapezoid_rule_is_exact_for_a_straight_line&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_trapezoid_rule_is_exact_for_a_straight_line&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_trapezoid_rule_error_falls_with_the_square_of_the_spacing&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_trapezoid_rule_error_falls_with_the_square_of_the_spacing&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_trapezoid_rule_error_falls_with_the_square_of_the_spacing&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_perfect_detections_score_one&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_perfect_detections_score_one&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_perfect_detections_score_one&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_no_detections_score_zero&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_no_detections_score_zero&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_no_detections_score_zero&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_detection_in_the_wrong_place_is_incorrect&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_detection_in_the_wrong_place_is_incorrect&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_detection_in_the_wrong_place_is_incorrect&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_second_detection_of_the_same_defect_is_incorrect&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_second_detection_of_the_same_defect_is_incorrect&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_second_detection_of_the_same_defect_is_incorrect&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_overlap_threshold_decides_correctness&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_overlap_threshold_decides_correctness&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_overlap_threshold_decides_correctness&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_average_precision_worked_example&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_average_precision_worked_example&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_average_precision_worked_example&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_classes_are_scored_separately&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_classes_are_scored_separately&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_classes_are_scored_separately&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_operating_point_chooses_or_applies_a_threshold&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_operating_point_chooses_or_applies_a_threshold&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_operating_point_chooses_or_applies_a_threshold&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_metrics.py::test_photograph_verdicts_count_each_outcome&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_metrics.py::test_photograph_verdicts_count_each_outcome&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_metrics.py::test_photograph_verdicts_count_each_outcome&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes0]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes0]&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes0]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes1]&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes2]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes2]&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_backpropagation_matches_finite_differences[layer_sizes2]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_gradient_check_detects_a_wrong_gradient&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_gradient_check_detects_a_wrong_gradient&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_gradient_check_detects_a_wrong_gradient&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_loss_matches_the_formula_in_the_unit_notes&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_loss_matches_the_formula_in_the_unit_notes&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_loss_matches_the_formula_in_the_unit_notes&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_zero_sample_weight_removes_an_output_from_the_loss&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_zero_sample_weight_removes_an_output_from_the_loss&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_zero_sample_weight_removes_an_output_from_the_loss&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_predictions_match_scikit_learn_given_the_same_weights&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_predictions_match_scikit_learn_given_the_same_weights&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_predictions_match_scikit_learn_given_the_same_weights&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_network_without_hidden_layers_recovers_a_linear_relationship&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_network_without_hidden_layers_recovers_a_linear_relationship&#34;, &#34;duration&#34;: &#34;25 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_network_without_hidden_layers_recovers_a_linear_relationship&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;25 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_hidden_layers_learn_a_curved_relationship_a_linear_model_cannot&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_hidden_layers_learn_a_curved_relationship_a_linear_model_cannot&#34;, &#34;duration&#34;: &#34;227 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_hidden_layers_learn_a_curved_relationship_a_linear_model_cannot&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;227 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_penalty_shrinks_the_weights&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_penalty_shrinks_the_weights&#34;, &#34;duration&#34;: &#34;18 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_penalty_shrinks_the_weights&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;18 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_early_stopping_restores_the_best_weights&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_early_stopping_restores_the_best_weights&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_early_stopping_restores_the_best_weights&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_training_is_repeatable_with_the_same_seed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_training_is_repeatable_with_the_same_seed&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_training_is_repeatable_with_the_same_seed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_adam_minimises_a_simple_bowl&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_adam_minimises_a_simple_bowl&#34;, &#34;duration&#34;: &#34;2 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_adam_minimises_a_simple_bowl&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;2 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_scaler_uses_training_statistics_only&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_scaler_uses_training_statistics_only&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_scaler_uses_training_statistics_only&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_scaler_leaves_constant_features_alone&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_scaler_leaves_constant_features_alone&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_scaler_leaves_constant_features_alone&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_scaler_must_be_fitted_first&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_scaler_must_be_fitted_first&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_scaler_must_be_fitted_first&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_parameter_and_operation_counts&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_parameter_and_operation_counts&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_parameter_and_operation_counts&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_network.py::test_layer_sizes_are_validated&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_network.py::test_layer_sizes_are_validated&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_network.py::test_layer_sizes_are_validated&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_study.py::test_each_variation_changes_exactly_one_setting&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_study.py::test_each_variation_changes_exactly_one_setting&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_study.py::test_each_variation_changes_exactly_one_setting&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/test_study.py::test_study_trains_and_scores_every_variation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_study.py::test_study_trains_and_scores_every_variation&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_study.py::test_study_trains_and_scores_every_variation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nlinear                                   average precision 0.000  parameters  10,801  passes  2      0 s\nquick                                    average precision 0.000  parameters  24,807  passes  2      0 s\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;test-report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+  </body>
+</html>

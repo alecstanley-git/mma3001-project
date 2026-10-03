@@ -1,0 +1,45 @@
+Training (two passes): the ten functions with most time inside them
+         1229431 function calls (1229286 primitive calls) in 11.665 seconds
+
+   Ordered by: internal time
+   List reduced from 462 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     4760    6.292    0.001    6.318    0.001 detector.py:190(cell_inputs)
+     4746    1.163    0.000    2.515    0.001 network.py:157(loss_and_gradients)
+     4760    1.110    0.000    1.111    0.000 network.py:128(forward)
+     4746    1.036    0.000    1.036    0.000 network.py:276(step)
+    33238    0.367    0.000    0.367    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      694    0.286    0.000    0.286    0.000 {method 'decompress' of 'zlib.Decompress' objects}
+     4746    0.222    0.000    6.322    0.001 detector.py:326(make_batch)
+    31568    0.162    0.000    0.207    0.000 boxes.py:82(intersection_over_union)
+       46    0.137    0.003    0.157    0.003 network.py:75(transform)
+    11248    0.107    0.000    0.139    0.000 grid.py:60(encode)
+
+
+
+Detection on 80 photographs read from disk
+         63824 function calls (63817 primitive calls) in 0.474 seconds
+
+   Ordered by: internal time
+   List reduced from 298 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.175    0.175    0.250    0.250 features.py:97(block_features)
+       80    0.080    0.001    0.179    0.002 dataset.py:196(load_image)
+       19    0.061    0.003    0.061    0.003 {method 'reduce' of 'numpy.ufunc' objects}
+      157    0.052    0.000    0.052    0.000 {method 'decode' of 'ImagingDecoder' objects}
+     4733    0.022    0.000    0.029    0.000 {built-in method numpy.asarray}
+        2    0.016    0.008    0.016    0.008 detector.py:190(cell_inputs)
+      167    0.014    0.000    0.014    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     2164    0.011    0.000    0.014    0.000 boxes.py:82(intersection_over_union)
+        1    0.008    0.008    0.008    0.008 features.py:45(brightness_gradients)
+     1440    0.005    0.000    0.005    0.000 {method 'encode' of 'ImagingEncoder' objects}
+
+
+
+Time per photograph: 5.9 milliseconds
+Network layers: (1542, 128, 64, 10)
+Learned parameters: 206,410
+Floating point operations per grid cell: 412,618
+Floating point operations per photograph (108 cells): 44,562,744

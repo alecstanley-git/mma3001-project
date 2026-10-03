@@ -1,0 +1,92 @@
+{
+  "results": [
+    {
+      "label": "chosen settings (seed 0)",
+      "average_precision": 0.5286021673964094,
+      "mean_average_precision": 0.22847183481973765,
+      "parameters": 206410,
+      "passes": 28,
+      "training_seconds": 261.5053727090126
+    },
+    {
+      "label": "seed 1",
+      "average_precision": 0.503996429367207,
+      "mean_average_precision": 0.1870454581799983,
+      "parameters": 206410,
+      "passes": 17,
+      "training_seconds": 166.985386165994
+    },
+    {
+      "label": "seed 2",
+      "average_precision": 0.5300045195518004,
+      "mean_average_precision": 0.2020270478403232,
+      "parameters": 206410,
+      "passes": 14,
+      "training_seconds": 141.19662937498651
+    },
+    {
+      "label": "seed 3",
+      "average_precision": 0.5487136649499942,
+      "mean_average_precision": 0.20749779768018964,
+      "parameters": 206410,
+      "passes": 23,
+      "training_seconds": 214.37841216599918
+    },
+    {
+      "label": "no hidden layer (linear regression)",
+      "average_precision": 0.24556791238274084,
+      "mean_average_precision": 0.09097557492170454,
+      "parameters": 15430,
+      "passes": 21,
+      "training_seconds": 129.0110263749957
+    },
+    {
+      "label": "one hidden layer of 64",
+      "average_precision": 0.5044109599986137,
+      "mean_average_precision": 0.19559696659900516,
+      "parameters": 99402,
+      "passes": 30,
+      "training_seconds": 204.57285154200508
+    },
+    {
+      "label": "hidden layers of 256 and 128",
+      "average_precision": 0.5298891743614471,
+      "mean_average_precision": 0.19978144821935082,
+      "parameters": 429194,
+      "passes": 36,
+      "training_seconds": 382.87400874999
+    },
+    {
+      "label": "weight penalty 10 times weaker",
+      "average_precision": 0.4830678431349815,
+      "mean_average_precision": 0.19999088447204358,
+      "parameters": 206410,
+      "passes": 33,
+      "training_seconds": 334.5719150840014
+    },
+    {
+      "label": "weight penalty 10 times stronger",
+      "average_precision": 0.48138526390854,
+      "mean_average_precision": 0.18777418835464826,
+      "parameters": 206410,
+      "passes": 19,
+      "training_seconds": 194.3020598749863
+    },
+    {
+      "label": "no mirrored copies",
+      "average_precision": 0.48097849410874577,
+      "mean_average_precision": 0.2712389123226141,
+      "parameters": 206410,
+      "passes": 52,
+      "training_seconds": 112.58566379197873
+    },
+    {
+      "label": "only the centre cell reports a defect",
+      "average_precision": 0.4616520338458313,
+      "mean_average_precision": 0.18577674360981145,
+      "parameters": 206410,
+      "passes": 34,
+      "training_seconds": 233.82383000000846
+    }
+  ]
+}

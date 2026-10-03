@@ -3,18 +3,26 @@ __pycache__/
 *.py[oc]
 build/
 dist/
-wheels/
 *.egg-info
+.pytest_cache/
 
-# Virtual environments
+# Virtual environment
 .venv
 
-# Remove the unit project brief (keep locally, available online)
-brief/
-
-
-data/train/*
+# Operating system clutter
 .DS_Store
 
-# Derived data: rebuilt by "python main.py --rebuild-cache"
+# The unit's project brief (kept locally, available from the unit page)
+brief/
+
+# Block features saved between runs; rebuilt automatically
 cache/
+
+# Ultralytics training output and model weights; rebuilt by the baseline command
+runs/
+*.pt
+
+# The written report is submitted separately and is not part of the repository
+report.typ
+report.pdf
+references.bib
