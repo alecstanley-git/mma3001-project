@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 5
+names: ['loose-meat', 'packaging-error', 'twisted-meat', 'unsealed', 'wrinkle']
+
+roboflow:
+  workspace: hello-2aqe0
+  project: pork-rasher-error-packaging
+  version: 4
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/hello-2aqe0/pork-rasher-error-packaging/dataset/4
