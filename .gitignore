@@ -21,3 +21,8 @@ cache/
 # Ultralytics training output and model weights; rebuilt by the baseline command
 runs/
 *.pt
+
+# The written report is submitted separately and is not part of the repository
+report.typ
+report.pdf
+references.bib
