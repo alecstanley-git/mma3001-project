@@ -194,7 +194,9 @@ As a check that the scoring code is right, the "unsealed" average precision it
 gives for the Ultralytics detections on validation (0.926) agrees with the
 value Ultralytics reports for itself (0.928).
 
-Example test photographs, chosen at even spacing rather than hand-picked:
+Example test photographs, chosen at even spacing rather than hand-picked.
+Green boxes are labelled defects and red dashed boxes are detections with
+their confidence:
 
 ![Detections on six test photographs](figures/example-detections.png)
 

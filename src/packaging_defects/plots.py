@@ -137,7 +137,7 @@ def plot_examples(
     figure, grid = plt.subplots(
         rows,
         columns,
-        figsize=(REPORT_TEXT_WIDTH, 0.78 * panel_width * rows + 0.3),
+        figsize=(REPORT_TEXT_WIDTH, 0.78 * panel_width * rows),
         squeeze=False,
     )
     for axes in grid.ravel():
@@ -180,7 +180,6 @@ def plot_examples(
                 color="red",
                 bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.8, "pad": 1},
             )
-    figure.suptitle("Green: labelled defect.  Red dashed: detection with its confidence.")
     _save(figure, path)
 
 
